@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>9527留言板</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="all" href="css/msg.board.css">
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" id="mb-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 title-content">
+                <div class="col-xs-3">
+                    <span class="title-text">9527留言板</span>
+                </div>
+                <div class="col-xs-2 col-xs-offset-7 title-user-info" id="user-info">
+                    <template v-if="!loginCheck" >
+                        <span class="rlButton" data-toggle="modal" data-target="#loginModal">登录
+                        </span><span class="rlButton" data-toggle="modal" data-target="#regModal">注册</span>
+                    </template>
+                    <template v-else>
+                        <span>{{ userName }}</span>
+                        <button class="btn btn-default btn-xs" v-on:click="logout">登出</button>
+                        <br><span>{{ email
+                        }}</span>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <!-- 顶级留言按钮-->
+    <div class="row first-msg-btn">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-11">
+            <button class="btn btn-default" data-toggle="modal" data-target="#msgModal"
+                    onclick="cleanContent()">留言
+            </button>
+        </div>
+    </div>
+    <!-- 留言列表 -->
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-10 msg-board" id="msg-board">
+            <!-- vue 留言组件 -->
+            <single-msg v-for="msg in msgs" v-bind:msg="msg" @replyclick="reply"></single-msg>
+        </div>
+        <div class="col-xs-1"></div>
+    </div>
+</div>
+
+<!-- 登录框 -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    登录
+                </h4>
+            </div>
+            <div class="alert alert-danger" role="alert" id="loginMsg" v-if="loginFail">{{ loginMsg
+                }}</div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="loginUser" class="col-sm-2 control-label">用户名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="loginUser"
+                                   placeholder="在此输入用户名或邮箱">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPwd" class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="loginPwd" placeholder="在此输入密码">
+                        </div>
+                    </div>
+                    <div class="form-group" style="white-space: nowrap">
+                        <label for="rememberMe" class="col-sm-2 control-label">记住我</label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" class="form-control" id="rememberMe"
+                                   style="width: 1em">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-10 col-sm-2">
+                            <button type="button" id="loginButton" class="btn btn-primary"
+                                    v-on:click="login">登录</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- 注册 -->
+<div class="modal fade" id="regModal" tabindex="-1" role="dialog" aria-labelledby="regModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="regModalLabel">
+                    注册
+                </h4>
+            </div>
+            <div class="alert alert-danger" role="alert" id="regMsg" v-if="regFail">{{ regMsg }}</div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="regUser" class="col-sm-2 control-label">用户名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="regUser"
+                                   placeholder="在此输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail" class="col-sm-2 control-label">邮箱</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="regEmail"
+                                   placeholder="在此输入邮箱">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPwd" class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="regPwd"
+                                   placeholder="在此输入密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-10 col-sm-2">
+                            <button type="button" id="regButton" class="btn btn-primary"
+                                    v-on:click="reg">注册</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- 留言 -->
+<div class="modal fade" id="msgModal" tabindex="-1" role="dialog" aria-labelledby="msgModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="msgModalLabel">
+                    留言
+                </h4>
+            </div>
+            <div class="alert alert-danger" role="alert" id="msgError" v-if="hasError">
+                {{ msgError }}</div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <span id="msg-to" v-if="notFirstLayer" style="color: grey"> {{msgTo}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <textarea class="form-control" id="msg-content"
+                                   placeholder="在此输入留言内容" v-on:input="checkCount" v-model="msgContent">
+                            </textarea>
+                            <span id="leave-count">字数限制 {{wordCount}}/200</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="to-id" v-model="parentId">
+                    <div class="form-group">
+                        <div class="col-sm-offset-10 col-sm-2">
+                            <button type="button" id="msgButton" class="btn btn-primary"
+                                    v-on:click="submitMsg">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/msg.board.js"></script>
+</body>
+</html>

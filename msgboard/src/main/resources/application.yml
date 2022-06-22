@@ -1,0 +1,11 @@
+server:
+  port: 8629
+
+spring:
+  datasource:
+    url: jdbc:sqlite::resource:msg_board.db
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+
+access-control-allow-origin: http://127.0.0.1
